@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 3.1.1 (Python 3.6.0 on win32)" generated="20190604 18:02:52.873" rpa="false">
+<suite id="s1" name="EverRun-Stage" source="C:\Users\akumar1\PycharmProjects\EverRun\tests\EverRun-Stage.robot">
+<test id="s1-t1" name="Should be able to start a VM">
+<kw name="Begin Web Test" library="CommonWeb" type="setup">
+<kw name="Log To Console" library="BuiltIn">
+<doc>Logs the given message to the console.</doc>
+<arguments>
+<arg>Starting</arg>
+</arguments>
+<status status="PASS" starttime="20190604 18:02:53.841" endtime="20190604 18:02:53.842"></status>
+</kw>
+<kw name="Open Browser" library="SeleniumLibrary">
+<doc>Opens a new browser instance to the given ``url``.</doc>
+<arguments>
+<arg>${URL}</arg>
+<arg>${BROWSER}</arg>
+</arguments>
+<msg timestamp="20190604 18:02:53.842" level="INFO">Opening browser 'gc' to base url 'http://10.200.129.241'.</msg>
+<status status="PASS" starttime="20190604 18:02:53.842" endtime="20190604 18:03:03.781"></status>
+</kw>
+<kw name="Maximize Browser Window" library="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" starttime="20190604 18:03:03.781" endtime="20190604 18:03:04.918"></status>
+</kw>
+<status status="PASS" starttime="20190604 18:02:53.841" endtime="20190604 18:03:04.919"></status>
+</kw>
+<kw name="Start A VM" library="EverRunApp">
+<kw name="Log in to EverRun" library="LoginPage">
+<arguments>
+<arg>${USER}</arg>
+<arg>${PWD}</arg>
+</arguments>
+<kw name="Input Text" library="SeleniumLibrary">
+<doc>Types the given ``text`` into text field identified by ``locator``.</doc>
+<arguments>
+<arg>${USERNAME_TEXTBOX}</arg>
+<arg>${USER}</arg>
+</arguments>
+<msg timestamp="20190604 18:03:04.922" level="INFO">Typing text 'admin' into text field 'css=#username'.</msg>
+<status status="PASS" starttime="20190604 18:03:04.921" endtime="20190604 18:03:05.078"></status>
+</kw>
+<kw name="Input Password" library="SeleniumLibrary">
+<doc>Types the given password into text field identified by ``locator``.</doc>
+<arguments>
+<arg>${PASSWORD_TEXTBOX}</arg>
+<arg>${PWD}</arg>
+</arguments>
+<msg timestamp="20190604 18:03:05.078" level="INFO">Typing password into text field 'css=#password'.</msg>
+<status status="PASS" starttime="20190604 18:03:05.078" endtime="20190604 18:03:05.196"></status>
+</kw>
+<kw name="Click Link" library="SeleniumLibrary">
+<doc>Clicks a link identified by ``locator``.</doc>
+<arguments>
+<arg>${LOGIN_BUTTON}</arg>
+</arguments>
+<msg timestamp="20190604 18:03:05.196" level="INFO">Clicking link 'css=#login-btn'.</msg>
+<status status="PASS" starttime="20190604 18:03:05.196" endtime="20190604 18:03:05.288"></status>
+</kw>
+<kw name="Wait Until Keyword Succeeds" library="BuiltIn">
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<arguments>
+<arg>3 min</arg>
+<arg>30 sec</arg>
+<arg>Element Should Be Visible</arg>
+<arg>${STRATUS_BANNER}</arg>
+</arguments>
+<assign>
+<var>${status}</var>
+</assign>
+<kw name="Element Should Be Visible" library="SeleniumLibrary">
+<doc>Verifies that the element identified by ``locator`` is visible.</doc>
+<arguments>
+<arg>${STRATUS_BANNER}</arg>
+</arguments>
+<kw name="Capture Page Screenshot" library="SeleniumLibrary">
+<doc>Takes screenshot of the current page and embeds it into log file.</doc>
+<msg timestamp="20190604 18:03:05.672" level="INFO" html="yes">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-344.png"&gt;&lt;img src="selenium-screenshot-344.png" width="800px"&gt;&lt;/a&gt;</msg>
+<status status="PASS" starttime="20190604 18:03:05.314" endtime="20190604 18:03:05.672"></status>
+</kw>
+<msg timestamp="20190604 18:03:05.678" level="FAIL">Element with locator 'css=#ext-gen21' not found.</msg>
+<status status="FAIL" starttime="20190604 18:03:05.290" endtime="20190604 18:03:05.679"></status>
+</kw>
+<kw name="Element Should Be Visible" library="SeleniumLibrary">
+<doc>Verifies that the element identified by ``locator`` is visible.</doc>
+<arguments>
+<arg>${STRATUS_BANNER}</arg>
+</arguments>
+<msg timestamp="20190604 18:03:35.750" level="INFO">Element 'css=#ext-gen21' is displayed.</msg>
+<status status="PASS" starttime="20190604 18:03:35.679" endtime="20190604 18:03:35.750"></status>
+</kw>
+<msg timestamp="20190604 18:03:35.751" level="INFO">${status} = None</msg>
+<status status="PASS" starttime="20190604 18:03:05.289" endtime="20190604 18:03:35.751"></status>
+</kw>
+<kw name="Run Keyword If" library="BuiltIn">
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<arguments>
+<arg>${status}=='PASS'</arg>
+<arg>Log</arg>
+<arg>Logged in successfully.</arg>
+</arguments>
+<status status="PASS" starttime="20190604 18:03:35.751" endtime="20190604 18:03:35.751"></status>
+</kw>
+<status status="PASS" starttime="20190604 18:03:04.920" endtime="20190604 18:03:35.752"></status>
+</kw>
+<kw name="Go To VM Page" library="VM-Page">
+<kw name="Click Element" library="SeleniumLibrary">
+<doc>Click element identified by ``locator``.</doc>
+<arguments>
+<arg>${VMPageNav}</arg>
+</arguments>
+<msg timestamp="20190604 18:03:35.753" level="INFO">Clicking element 'id=vmNav'.</msg>
+<status status="PASS" starttime="20190604 18:03:35.752" endtime="20190604 18:03:35.821"></status>
+</kw>
+<kw name="Wait Until Page Contains Element" library="SeleniumLibrary">
+<doc>Waits until element ``locator`` appears on current page.</doc>
+<arguments>
+<arg>${VMPageTitle}</arg>
+</arguments>
+<status status="PASS" starttime="20190604 18:03:35.821" endtime="20190604 18:03:35.949"></status>
+</kw>
+<kw name="Element Text Should Be" library="SeleniumLibrary">
+<doc>Verifies that element ``locator`` contains exact text ``expected``.</doc>
+<arguments>
+<arg>${VMPageTitle}</arg>
+<arg>Virtual Machines</arg>
+<arg>ignore_case=True</arg>
+</arguments>
+<msg timestamp="20190604 18:03:35.950" level="INFO">Verifying element 'xpath://*[@class='vmTitle viewTitle']' contains exact text 'Virtual Machines'.</msg>
+<status status="PASS" starttime="20190604 18:03:35.950" endtime="20190604 18:03:36.009"></status>
+</kw>
+<kw name="Page Should Contain Element" library="SeleniumLibrary">
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<arguments>
+<arg>xpath://*[contains(text(),"Virtual Machines")]</arg>
+</arguments>
+<msg timestamp="20190604 18:03:36.040" level="INFO">Current page contains element 'xpath://*[contains(text(),"Virtual Machines")]'.</msg>
+<status status="PASS" starttime="20190604 18:03:36.009" endtime="20190604 18:03:36.040"></status>
+</kw>
+<status status="PASS" starttime="20190604 18:03:35.752" endtime="20190604 18:03:36.041"></status>
+</kw>
+<kw name="Select a given VM" library="VM-Page">
+<arguments>
+<arg>${VMNAME}</arg>
+</arguments>
+<kw name="Log" library="BuiltIn">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>The given VM to be selected is ${GIVEN_VM}</arg>
+</arguments>
+<msg timestamp="20190604 18:03:36.042" level="INFO">The given VM to be selected is Win2k16</msg>
+<status status="PASS" starttime="20190604 18:03:36.041" endtime="20190604 18:03:36.042"></status>
+</kw>
+<kw name="Assign Id To Element" library="SeleniumLibrary">
+<doc>Assigns temporary ``id`` to element specified by ``locator``.</doc>
+<arguments>
+<arg>xpath://*[@class='vm-namecol' and contains(text(),${GIVEN_VM})]</arg>
+<arg>TargetVM</arg>
+</arguments>
+<msg timestamp="20190604 18:03:36.043" level="INFO">Assigning temporary id 'TargetVM' to element 'xpath://*[@class='vm-namecol' and contains(text(),Win2k16)]'.</msg>
+<status status="PASS" starttime="20190604 18:03:36.042" endtime="20190604 18:03:36.078"></status>
+</kw>
+<kw name="Wait Until Page Contains Element" library="SeleniumLibrary">
+<doc>Waits until element ``locator`` appears on current page.</doc>
+<arguments>
+<arg>TargetVM</arg>
+<arg>3 min</arg>
+<arg>30 sec</arg>
+</arguments>
+<status status="PASS" starttime="20190604 18:03:36.078" endtime="20190604 18:03:36.094"></status>
+</kw>
+<kw name="Click Element" library="SeleniumLibrary">
+<doc>Click element identified by ``locator``.</doc>
+<arguments>
+<arg>TargetVM</arg>
+</arguments>
+<msg timestamp="20190604 18:03:36.095" level="INFO">Clicking element 'TargetVM'.</msg>
+<status status="PASS" starttime="20190604 18:03:36.094" endtime="20190604 18:03:36.159"></status>
+</kw>
+<kw name="Set Focus To Element" library="SeleniumLibrary">
+<doc>Sets focus to element identified by ``locator``.</doc>
+<arguments>
+<arg>TargetVM</arg>
+</arguments>
+<status status="PASS" starttime="20190604 18:03:36.159" endtime="20190604 18:03:36.181"></status>
+</kw>
+<kw name="Press Keys" library="SeleniumLibrary">
+<doc>Simulates user pressing key(s) to an element or on the active browser.</doc>
+<arguments>
+<arg>TargetVM</arg>
+<arg>RETURN</arg>
+</arguments>
+<msg timestamp="20190604 18:03:36.183" level="INFO">Sending key(s) ('RETURN',) to TargetVM element.</msg>
+<msg timestamp="20190604 18:03:36.196" level="INFO">Pressing special key RETURN to element.</msg>
+<status status="PASS" starttime="20190604 18:03:36.182" endtime="20190604 18:03:36.229"></status>
+</kw>
+<kw name="Get Text" library="SeleniumLibrary">
+<doc>Returns the text value of element identified by ``locator``.</doc>
+<arguments>
+<arg>TargetVM</arg>
+</arguments>
+<assign>
+<var>${VMText}</var>
+</assign>
+<msg timestamp="20190604 18:03:36.254" level="INFO">${VMText} = Centos_7.4</msg>
+<status status="PASS" starttime="20190604 18:03:36.229" endtime="20190604 18:03:36.254"></status>
+</kw>
+<kw name="Log" library="BuiltIn">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>${VMText}</arg>
+</arguments>
+<msg timestamp="20190604 18:03:36.255" level="INFO">Centos_7.4</msg>
+<status status="PASS" starttime="20190604 18:03:36.254" endtime="20190604 18:03:36.255"></status>
+</kw>
+<kw name="Element Text Should Be" library="SeleniumLibrary">
+<doc>Verifies that element ``locator`` contains exact text ``expected``.</doc>
+<arguments>
+<arg>TargetVM</arg>
+<arg>${GIVEN_VM}</arg>
+<arg>ignore_case=True</arg>
+</arguments>
+<msg timestamp="20190604 18:03:36.255" level="INFO">Verifying element 'TargetVM' contains exact text 'Win2k16'.</msg>
+<kw name="Capture Page Screenshot" library="SeleniumLibrary">
+<doc>Takes screenshot of the current page and embeds it into log file.</doc>
+<msg timestamp="20190604 18:03:36.681" level="INFO" html="yes">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-345.png"&gt;&lt;img src="selenium-screenshot-345.png" width="800px"&gt;&lt;/a&gt;</msg>
+<status status="PASS" starttime="20190604 18:03:36.280" endtime="20190604 18:03:36.681"></status>
+</kw>
+<msg timestamp="20190604 18:03:36.683" level="FAIL">The text of element 'TargetVM' should have been 'win2k16' but it was 'Centos_7.4'.</msg>
+<status status="FAIL" starttime="20190604 18:03:36.255" endtime="20190604 18:03:36.684"></status>
+</kw>
+<status status="FAIL" starttime="20190604 18:03:36.041" endtime="20190604 18:03:36.684"></status>
+</kw>
+<status status="FAIL" starttime="20190604 18:03:04.919" endtime="20190604 18:03:36.684"></status>
+</kw>
+<kw name="End Web Test" library="CommonWeb" type="teardown">
+<kw name="Log To Console" library="BuiltIn">
+<doc>Logs the given message to the console.</doc>
+<arguments>
+<arg>Closing Browser</arg>
+</arguments>
+<status status="PASS" starttime="20190604 18:03:36.686" endtime="20190604 18:03:36.686"></status>
+</kw>
+<kw name="Close All Browsers" library="SeleniumLibrary">
+<doc>Closes all open browsers and resets the browser cache.</doc>
+<status status="PASS" starttime="20190604 18:03:36.686" endtime="20190604 18:03:39.325"></status>
+</kw>
+<status status="PASS" starttime="20190604 18:03:36.685" endtime="20190604 18:03:39.325"></status>
+</kw>
+<doc>Verify ability to "Select a VM" and start it in the EverRun App</doc>
+<tags>
+<tag>DevTest1</tag>
+</tags>
+<status status="FAIL" starttime="20190604 18:02:53.840" endtime="20190604 18:03:39.326" critical="yes">The text of element 'TargetVM' should have been 'win2k16' but it was 'Centos_7.4'.</status>
+</test>
+<status status="FAIL" starttime="20190604 18:02:52.878" endtime="20190604 18:03:39.334"></status>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1">Critical Tests</stat>
+<stat pass="0" fail="1">All Tests</stat>
+</total>
+<tag>
+<stat pass="0" fail="1">DevTest1</stat>
+</tag>
+<suite>
+<stat pass="0" fail="1" id="s1" name="EverRun-Stage">EverRun-Stage</stat>
+</suite>
+</statistics>
+<errors>
+<msg timestamp="20190604 18:02:53.241" level="WARN">Imported resource file 'C:\Users\akumar1\PycharmProjects\EverRun\Resources\PO\StratusBanner.robot' is empty.</msg>
+<msg timestamp="20190604 18:02:53.244" level="WARN">Imported resource file 'C:\Users\akumar1\PycharmProjects\EverRun\Resources\PO\PM-Page.robot' is empty.</msg>
+</errors>
+</robot>
