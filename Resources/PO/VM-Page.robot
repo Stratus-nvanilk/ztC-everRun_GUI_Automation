@@ -1,30 +1,37 @@
 *** Settings ***
 Library  SeleniumLibrary
-Library  RemoteSwingLibrary
+Library  String
 
 *** Variables ***
-${VMPageNav} =  id=vmNav
+${VMPageNav} =  id:vmNav
+${VMPageTitle} =  xpath://*[@class="vmTitle viewTitle"]
 ${StartVMButton} =  xpath://*[@id="ext-gen763"]
-${VMPageTitle} =  xpath://*[@class='vmTitle viewTitle']
-
+${ShutDownVMButton} =  xpath://*[@id="ext-gen771"]
+${YesButton} =  xpath://*[@id="ext-comp-1714"]
 
 *** Keywords ***
 Go To VM Page
     Click Element  ${VMPageNav}
-
     Wait Until Page Contains Element  ${VMPageTitle}
-    Element Text Should Be  ${VMPageTitle}  Virtual Machines  ignore_case=True
+    sleep  10s
+    Element Text Should Be  ${VMPageTitle}  VIRTUAL MACHINES  ignore_case=True
     Page Should Contain Element  xpath://*[contains(text(),"Virtual Machines")]
 
 Select a given VM
     [Arguments]  ${GIVEN_VM}
     Log  The given VM to be selected is ${GIVEN_VM}
+    sleep  10s
+    ${WE} =  Get WebElement  xpath://*[@class='vm-namecol' and contains(text(),${GIVEN_VM})]
+    Wait Until Page Contains Element  ${WE}  3 min  30 sec
+    Log  ${WE}
+    Click Element  ${WE}
+    Set Focus To Element  ${WE}
     Assign ID To Element  xpath://*[@class='vm-namecol' and contains(text(),${GIVEN_VM})]  TargetVM
     Wait Until Page Contains Element  TargetVM  3 min  30 sec
+    ${exp}=	Get Element Attribute  TargetVM  attribute=xpath
+    LOG  ${exp}
     Click Element  TargetVM
     Set Focus To Element  TargetVM
-    Press Keys  TargetVM  RETURN
-    #Element Should Be Focused  TargetVM
     ${VMText} =  Get Text  TargetVM
     LOG  ${VMText}
     Element Text Should Be  TargetVM  ${GIVEN_VM}  ignore_case=True
@@ -35,9 +42,52 @@ Start Selected VM
     Click Button  ${StartVMButton}
     sleep  60s
 
-    #===========================================================================================
+Shutdown Selected VM
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${ShutDownVMButton}
+    Element Should Be Enabled  ${ShutDownVMButton}
+    Click Button  ${ShutDownVMButton}
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${YesButton}
+    Click Element  ${YesButton}
+    sleep  60s
 
+Verify VM Is Stopped
+    [Arguments]  ${GIVEN_VM}
+    ${Reqd_Element} =  Get Table Element  ${GIVEN_VM}
+    ${WebElmText} =  Get Text  ${Reqd_Element}
+    Log  ${WebElmText}
+    Should Contain   ${WebElmText}  stopped
 
+Verify VM Is Started
+    [Arguments]  ${GIVEN_VM}
+    ${Reqd_Element} =  Get Table Element  ${GIVEN_VM}
+    ${WebElmText} =  Get Text  ${Reqd_Element}
+    Log  ${WebElmText}
+    Should Contain   ${WebElmText}  running
+
+Get Table Element
+    [Arguments]  ${Unique_ID}
+    Log  Searching the table for the given unique ID : ${Unique_ID}
+    @{WebElmts} =  Get WebElements  xpath://table
+    Set Test Variable  @{WebElmts}
+    ${WebElmtsNum} =  Get Length  ${WebElmts}
+    : FOR  ${a}  IN RANGE  ${WebElmtsNum}
+    \    ${WebElmText} =  Get Text  @{WebElmts}[${a}]
+    \    Log  ${WebElmText}
+    \    ${stripped}=  Strip String  ${WebElmText}  mode=both
+    \    Run Keyword If	'''${WebElmText}''' == ''  Continue For Loop
+    \
+    \    @{lines} =	 Split To Lines  ${WebElmText}
+    \    Run Keyword If  '${Unique_ID}' in @{lines}  Set Test Variable  ${MyWebElmnt}  @{WebElmts}[${a}]
+    \    ...    ELSE IF  '${Unique_ID}' not in @{lines}  Continue For Loop
+    \
+    \    Run Keyword If    ${a}>${WebElmtsNum}   Exit For Loop
+    [Return]  ${MyWebElmnt}
+
+#==========================Scrap Book=================================================================
+
+    #\    ${matches} =  Should Match Regexp  (?im)${Unique_ID}  ${WebElmText}
+    #//*[@id="ext-gen1251"]/table
+    #//*[@id="vm"] => Table xpath
     #xpath://*[@id="ext-gen763"]
     #Get Table Row Values  css=html.ext-strict.x-viewport body#ext-gen3.ext-gecko.ext-gecko3.x-border-layout-ct div#ext-comp-1029.x-panel.x-panel-noborder.x-border-panel div#ext-gen15.x-panel-bwrap div#ext-gen16.x-panel-body.x-panel-body-noheader.x-panel-body-noborder div#vm.x-panel.x-panel-noborder div#ext-gen242.x-panel-bwrap div#ext-gen243.x-panel-body.whitepanel.x-panel-body-noheader.x-panel-body-noborder.x-border-layout-ct div#ext-comp-1377.x-panel.x-panel-noborder.x-grid-panel.x-border-panel div#ext-gen673.x-panel-bwrap div#ext-gen674.x-panel-body.x-panel-body-noheader.x-panel-body-noborder div#ext-gen675.x-grid3 div#ext-gen676.x-grid3-viewport div#ext-gen678.x-grid3-scroller  1
     #Assign ID To Element  xpath://*[@class='vm-namecol' and @value=${GIVEN_VM}]  TargetVM
@@ -74,3 +124,68 @@ Start Selected VM
     #Log  ${Val}
     #Log  ${Req_Cell}
     #ext-gen753 > span
+    #Working ones:
+    #Wait Until Page Contains  ${WE}
+    #xpath://*[@class="x-btn-small x-btn-icon-small-left"]
+    #${YesButton} =  xpath://*[@id="ext-gen1249" and contains(text(),"Yes")]
+    #//*[@id="ext-comp-1714"]/tbody
+    #ext-comp-1714 > tbody
+    #ext-comp-1714 > tbody > tr:nth-child(2) > td.x-btn-mc
+    #//*[@id="ext-comp-1714"]/tbody/tr[2]/td[2]
+    #//*[@id="ext-comp-1714"]
+    #xpath://*[@id="ext-gen1249"]
+    #xpath://*[@id="ext-gen1249"]
+    #Wait Until Page Contains Element  ${YesButton}
+    #//*[@id="ext-comp-1388"]
+    #So first I added control, if there is this table element and it tells me TRUE every time:
+    #${present} =    Run Keyword And Return Status    Element Should Be Visible    xpath=//table[contains(@id,'table1')]/tbody
+    #Run Keyword If    ${present}    log to console    \nTABLE CELL ELEMENT EXISTS - ${present}
+    #//*[@id="ext-gen1253"]/table/tbody/tr/td[4]
+    #//*[@id="ext-gen1281"]/table/tbody/tr/td[2]
+#    :FOR    ${i}    IN RANGE    ${startvalue}    ${endvalue}    step=${step}
+#
+#\        Run Keyword If  condition1 or condition2  Call_Keyword  ${val1}  {val2}
+#\        Run Keyword If  condition3  exit for loop
+    #\    Should Contain  $ElmntText  $Unique_ID  ignore_case=True
+    #Exit For Loop if    '$Unique_ID' in '''$ElmntText'''
+    #@{WebElmtsList} =  Create List  @{WebElmts}
+    #${MyWebElmnt} =  ${None}
+    #Set Test Variable  ${MyWebElmnt}  ${a}
+    #run keyword if  $Unique_ID in $ElmntText  LOG TO CONSOLE  Hello
+    #Set Test Variable    ${WE}    @{WebElmts}[${a}]
+    #${WebElmText} =  Get Text  ${WE}
+    #${ElmntText} =  Get Text  @{WebElmts}[${a}]
+    #Log  ${ElmntText}
+    #LOG TO CONSOLE  ${MyWebElmnt}
+    #Exit For Loop if    '$Unique_ID' in '''$WebElmText'''
+    #${stripped}=  Strip String  ${WebElmText}  mode=both
+    #@{lines} =	 Split To Lines  ${stripped}
+#    @{cells}=  Get WebElements  xpath://table
+#    : FOR    ${a}  IN RANGE  0  100
+#    \    ${CellText} =  Get Text  @{cells}[${a}]
+#    \    Log  ${CellText}
+#
+#    Assign ID To Element  xpath://*[@class='vm-namecol' and contains(text(),${GIVEN_VM})]  TargetVM
+#    Scroll Element Into View  TargetVM
+#    #Table Column Should Contain  xpath://table  2  stopped
+#    ${CellVal} =  Get WebElement  xpath://table/tbody/tr[2]//td[3]
+#    ${CellText} =  Get Text  ${CellVal}
+#    LOG  ${CellVal}
+#    LOG  ${CellText}
+#    #Element Text Should Be  ${CellVal}  stopped  ignore_case=True
+#    ${CellText}=  Get Value  ${CellVal}
+#    LOG  ${CellText}
+    #Table Cell Should Contain  xpath://table/tbody/tr[2]//td[2]  stopped
+    #Table Cell Should Contain  xpath://table  2  3  stopped
+    #${Req_Cell} =  create list  Get Table Cell  xpath://table  1  2
+#    @{Req_Cell} =  Get Table Cell  xpath://*[@id="vm"]  2  3
+#    LOG  @{Req_Cell}
+#    @{cells}=  Get WebElements  xpath://table
+#    : FOR    ${a}  IN  0  100
+#  \    Log  @{cells}[${a}]
+#    #LOG  @{cells}
+    #Wait Until Page Contains  ${WE}
+    #    ${Req_Cell} =  Get Table Cell  xpath://*[@class="x-grid3" and contains(text(),${GIVEN_VM})]  2  3
+#    LOG  ${Req_Cell}
+    #Press Keys  TargetVM  RETURN
+    #Element Should Be Focused  TargetVM

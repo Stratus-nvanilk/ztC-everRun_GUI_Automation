@@ -16,7 +16,8 @@ ${URL} =  http://10.200.129.241
 ${USER} =  admin
 ${PWD} =  admin_Test
 ${GLOBAL1}  I am a global variable
-${VMNAME} =  Win2k16
+${VMNAME} =  MYWINDOWS_VM
+
 *** Test Cases ***
 
 Declare and set variables
@@ -55,12 +56,17 @@ Should be able to login to App
     Verify Login Process
 
 Should be able to select a VM
-    [Documentation]  Testing ability to "Select a VM" in the EverRun App
+    [Documentation]  Testing ability to "Select a VM" on the EverRun App
     [Tags]  DevTest
     Go To VM Page
     Select a given VM  ${VMNAME}
 
 Should be able to start a VM
-    [Documentation]  Verify ability to "Select a VM" and start it in the EverRun App
+    [Documentation]  Verify ability to start a selected VM on EverRun App
     [Tags]  DevTest1
     Start A VM
+
+Should be able to shutdown a VM
+    [Documentation]  Verify ability to shutdown a selected VM on EverRun App
+    [Tags]  DevTest1
+    Shutdown A VM

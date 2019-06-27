@@ -29,10 +29,16 @@ Go To "Team" Page
 Validate "Team" Page
     Team.Validate Page Contents
 
- Start A VM
+Start A VM
     LoginPage.Log in to EverRun  ${USER}  ${PWD}
     VM-Page.Go To VM Page
     VM-Page.Select a given VM  ${VMNAME}
     VM-Page.Start Selected VM
+    Verify VM Is Started  ${VMNAME}
 
-
+Shutdown A VM
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    VM-Page.Go To VM Page
+    VM-Page.Select a given VM  ${VMNAME}
+    VM-Page.Shutdown Selected VM
+    VM-Page.Verify VM Is Stopped  ${VMNAME}
