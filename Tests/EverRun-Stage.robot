@@ -12,11 +12,11 @@ Test Teardown  End Web Test
 
 *** Variables ***
 ${BROWSER} =  gc
-${URL} =  http://10.200.129.241
+${URL} =  http://10.200.129.205
 ${USER} =  admin
-${PWD} =  admin_Test
+${PWD} =  admin
 ${GLOBAL1}  I am a global variable
-${VMNAME} =  MYWINDOWS_VM
+${VMNAME} =  Windows2k16
 
 *** Test Cases ***
 
@@ -68,5 +68,15 @@ Should be able to start a VM
 
 Should be able to shutdown a VM
     [Documentation]  Verify ability to shutdown a selected VM on EverRun App
-    [Tags]  DevTest1
+    [Tags]  DevTest2
     Shutdown A VM
+
+Should be able to power off a VM
+    [Documentation]  Verify ability to power off a selected VM on EverRun App
+    [Tags]  DevTest3
+    Power Off A VM
+
+Should be able to mount device
+    [Documentation]  Verify ability to mount a device on EverRun App
+    [Tags]  DevTest4
+    Mount A Device
