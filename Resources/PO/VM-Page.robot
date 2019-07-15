@@ -5,9 +5,18 @@ Library  String
 *** Variables ***
 ${VMPageNav} =  id:vmNav
 ${VMPageTitle} =  xpath://*[@class="vmTitle viewTitle"]
+${MountButton} =  xpath://*[@class=" x-btn-text vm-mount-cmd-icon"]
+${MountDialog} =  xpath://*[@class=' sn-window']
+${MountRadioGroup} =  device
+${MountRepository} =  xpath://*[@class=" x-form-text x-form-field x-form-invalid" and @name="repository"]
+${DialogMountButton} =  xpath://*[@class="smux-l10n " and contains(text(),"Mount")]
+${UnmountButton} =  xpath://*[@class="smux-l10n " and contains(text(),'Unmount')]
+${NFS-Share} =  10.200.129.221:/blr_test1
 ${StartVMButton} =  xpath://*[@id="ext-gen763"]
 ${ShutDownVMButton} =  xpath://*[@id="ext-gen771"]
-${YesButton} =  xpath://*[@id="ext-comp-1714"]
+${PowerOffVMButton} =  xpath://*[@class=" x-btn-text vm-poweroff-cmd-icon"]
+${YesButton} =  xpath://*[@class="smux-l10n " and contains(text(),'Yes')]
+#The above locator is working.
 
 *** Keywords ***
 Go To VM Page
@@ -39,8 +48,9 @@ Select a given VM
 Start Selected VM
     Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${StartVMButton}
     Element Should Be Enabled  ${StartVMButton}
-    Click Button  ${StartVMButton}
-    sleep  60s
+    Click Element  ${StartVMButton}
+    #Set Focus To Element  ${StartVMButton}
+    sleep  180s
 
 Shutdown Selected VM
     Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${ShutDownVMButton}
@@ -64,6 +74,15 @@ Verify VM Is Started
     Log  ${WebElmText}
     Should Contain   ${WebElmText}  running
 
+Power Off Selected VM
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${PowerOffVMButton}
+    Element Should Be Enabled  ${PowerOffVMButton}
+    Click Button  ${PowerOffVMButton}
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${YesButton}
+    Get Text  ${YesButton}
+    Click Element  ${YesButton}
+    sleep  180s
+
 Get Table Element
     [Arguments]  ${Unique_ID}
     Log  Searching the table for the given unique ID : ${Unique_ID}
@@ -83,7 +102,46 @@ Get Table Element
     \    Run Keyword If    ${a}>${WebElmtsNum}   Exit For Loop
     [Return]  ${MyWebElmnt}
 
+Open Mount Dialog
+    Wait Until Keyword Succeeds  3 min  30 sec    Element Should Be Visible  ${MountButton}
+    Element Should Be Enabled  ${MountButton}
+    Click Button  ${MountButton}
+    sleep  2s
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${MountDialog}
+
+Mount Device Via NFS
+    Open Mount Dialog
+    Select Radio Button  ${MountRadioGroup}  nfs
+    sleep  5s
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${MountRepository}
+    Assign ID To Element  ${MountRepository}  tbRepository
+    Press Key  tbRepository  \\09
+    Input Text  tbRepository  ${NFS-Share}
+    Click Element  ${DialogMountButton}
+    Sleep  5s
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${UnmountButton}
+
+
+
+
+#    Assign ID To Element  ${DialogMountButton}  btnMountdlg
+#    ${WE} =  Get WebElement  btnMountdlg
+#    LOG  ${WE}
+#    Mouse Over  ${WE}
+#    Press Keys  ${WE}  RETURN
+    #Click Element  css=#ext-comp-1991 > tbody > tr:nth-child(2) > td.x-btn-mc
+    #${cssMB} =  Get Element Attribute  btnMountdlg  attribute=xpath
+    #Click Element  ${cssMB}
+    #Click Button  //button[contains(@class, ' x-btn-text')]/span[contains(@class,'smux-l10n ')]
+    #//button[.//text() = 'Mount']
+    #css:#ext-gen1231
+
 #==========================Scrap Book=================================================================
+#//*[@id="ext-gen1211"]
+#//*[@id="ext-comp-1613"]/tbody/tr[2]/td[2]
+#ext-comp-1613
+#ext-comp-1613 > tbody
+#//*[@id="ext-gen1212"]/span
 
     #\    ${matches} =  Should Match Regexp  (?im)${Unique_ID}  ${WebElmText}
     #//*[@id="ext-gen1251"]/table
@@ -189,3 +247,27 @@ Get Table Element
 #    LOG  ${Req_Cell}
     #Press Keys  TargetVM  RETURN
     #Element Should Be Focused  TargetVM
+    #Confirm Action
+    #Alert Should Be Present  timeout=180 s
+    #Wait Until Keyword Succeeds  3 min  30 sec  Handle Alert  timeout=30 s
+    #text=Power Off is a non-orderly shutdown of a Virtual Machine, are you sure you want to proceed?
+    #Click Element  //button[@value='Yes']
+    #Assign ID To Element  xpath://*[@class=" x-btn-text" and @value="Yes"]  YesBtn
+    #Handle Alert  action=ACCEPT  timeout=55 s
+    #Get Window Titles
+    #${wt} =  Get Title
+    #Select Window  Title=tlt_confirm
+    #Click Button  Yes
+    #${ct} =  #ext-comp-1619 > tbody > tr:nth-child(2) > td.x-btn-mc
+    #xpath://*[@id="ext-comp-1623"]
+    #${YesButton}
+    #sleep  120s
+    #Click Element  YesBtn
+    #ext-comp-1619 > tbody > tr:nth-child(2) > td.x-btn-mc
+    #//*[@id="ext-comp-1619"]/tbody/tr[2]/td[2]
+
+#Try using css instead of xpath and use an exact match instead of contains and look at an element or attribute rather than text.
+#So Try using css=(a[title='Audio'])
+#If necessary isolate by table or td, for example css=(table#some_id a[title='Audio'])
+    #Click Button  //button[.//text() = 'Mount']
+    #Click Button  xpath=//span[contains(text(),'Mount')]
