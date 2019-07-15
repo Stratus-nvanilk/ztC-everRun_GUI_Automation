@@ -42,3 +42,16 @@ Shutdown A VM
     VM-Page.Select a given VM  ${VMNAME}
     VM-Page.Shutdown Selected VM
     VM-Page.Verify VM Is Stopped  ${VMNAME}
+
+Power Off A VM
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    VM-Page.Go To VM Page
+    VM-Page.Select a given VM  ${VMNAME}
+    VM-Page.Power Off Selected VM
+    VM-Page.Verify VM Is Stopped  ${VMNAME}
+
+Mount A Device
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    VM-Page.Go To VM Page
+    VM-Page.Mount Device Via NFS
+
