@@ -34,7 +34,7 @@ Start A VM
     VM-Page.Go To VM Page
     VM-Page.Select a given VM  ${VMNAME}
     VM-Page.Start Selected VM
-    Verify VM Is Started  ${VMNAME}
+    VM-Page.Verify VM Is Started  ${VMNAME}
 
 Shutdown A VM
     LoginPage.Log in to EverRun  ${USER}  ${PWD}
@@ -53,5 +53,8 @@ Power Off A VM
 Mount A Device
     LoginPage.Log in to EverRun  ${USER}  ${PWD}
     VM-Page.Go To VM Page
-    VM-Page.Mount Device Via NFS
+    VM-Page.Mount Device Via USB  ${USB}
+    #VM-Page.Mount Device Via Windows Share
+    #VM-Page.Mount Device Via NFS
+    #VM-Page.Unmount Device And Verify
 
