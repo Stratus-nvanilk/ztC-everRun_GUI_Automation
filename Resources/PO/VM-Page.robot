@@ -9,14 +9,24 @@ ${MountButton} =  xpath://*[@class=" x-btn-text vm-mount-cmd-icon"]
 ${MountDialog} =  xpath://*[@class=' sn-window']
 ${MountRadioGroup} =  device
 ${MountRepository} =  xpath://*[@class=" x-form-text x-form-field x-form-invalid" and @name="repository"]
-${DialogMountButton} =  xpath://*[@class="smux-l10n " and contains(text(),"Mount")]
-${UnmountButton} =  xpath://*[@class="smux-l10n " and contains(text(),'Unmount')]
+${DialogMountButton} =  xpath:/html/body/div[50]/div[2]/div[2]/div/div/div/div[1]/table/tbody/tr/td[1]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/em/button/span
+${UnmountButton} =  xpath://*[@class="smux-l10n " and contains(text(),"Unmount")]
+#
 ${NFS-Share} =  10.200.129.221:/blr_test1
+${MRepositoryTB} =  xpath://*[@id="ext-comp-1721"]
+${MountUserName} =  xpath://*[@class=" x-form-text x-form-field" and @name="name"]
+${MountUserPwd} =  xpath://*[@class=" x-form-text x-form-field" and @name="password"]
+${UserName} =  administrator
+${UserPwd} =  syseng
+${WINDOWS-Share} =  \\\\10.200.129.221\\blr_test1
 ${StartVMButton} =  xpath://*[@id="ext-gen763"]
 ${ShutDownVMButton} =  xpath://*[@id="ext-gen771"]
 ${PowerOffVMButton} =  xpath://*[@class=" x-btn-text vm-poweroff-cmd-icon"]
 ${YesButton} =  xpath://*[@class="smux-l10n " and contains(text(),'Yes')]
 #The above locator is working.
+${Reqd_USB} =  xpath:/html/body/div[52]/div/div[1]
+${SelectedUSBDDL} =  xpath://*[@class="smux-l10n " and contains(text(),"USB Partition List")]
+
 
 *** Keywords ***
 Go To VM Page
@@ -84,6 +94,7 @@ Power Off Selected VM
     sleep  180s
 
 Get Table Element
+    #Todo  If given unique id is not found then how this should behave?
     [Arguments]  ${Unique_ID}
     Log  Searching the table for the given unique ID : ${Unique_ID}
     @{WebElmts} =  Get WebElements  xpath://table
@@ -115,15 +126,59 @@ Mount Device Via NFS
     sleep  5s
     Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${MountRepository}
     Assign ID To Element  ${MountRepository}  tbRepository
-    Press Key  tbRepository  \\09
+    Press Keys  tbRepository  \\09
     Input Text  tbRepository  ${NFS-Share}
+    Hit Mount And Verify
+
+Hit Mount And Verify
     Click Element  ${DialogMountButton}
     Sleep  5s
     Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${UnmountButton}
 
+Mount Device Via Windows Share
+    #Todo  Test this keyword thoroughly.
+    Open Mount Dialog
+    Select Radio Button  ${MountRadioGroup}  samba
+    sleep  5s
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${MRepositoryTB}
+    Element Should Be Visible  ${MountUserName}
+    Assign ID To Element  ${MountUserName}  tbUserName
+    Input Text  tbUserName  ${UserName}
+    Assign ID To Element  ${MountUserPwd}  tbUserPwd
+    Input Text  tbUserPwd  ${UserPwd}
+    Assign ID To Element  ${MRepositoryTB}  tbRepository
+    Input Text  tbRepository  ${WINDOWS-Share}
+    Hit Mount And Verify
+
+Unmount Device And Verify
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${UnmountButton}
+    Click Element  ${UnmountButton}
+    Sleep  5s
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${YesButton}
+    Click Element  ${YesButton}
+    Sleep  5s
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${MountButton}
+
+Mount Device Via USB
+    [Arguments]  ${DDL_Option}
+    Open Mount Dialog
+    Select Radio Button  ${MountRadioGroup}  usb
+    sleep  5s
+    Assign ID To Element  ${SelectedUSBDDL}  USBPL
+    ${WE} =  Get WebElement  USBPL
+    ${WEText} =  Get Text  USBPL
+    LOG  ${WEText}
+    Click Element  ${WE}
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${Reqd_USB}
+    Click Element  ${Reqd_USB}
+    Hit Mount And Verify
 
 
-
+#Todo  Keyword for unmount and remove VM to be written.
+#//*[@id="ext-gen1450"]/span
+#ext-gen1450 > span
+#ext-gen1323 > span:nth-child(1)
+#/html/body/div[50]/div[2]/div[2]/div/div/div/div[1]/table/tbody/tr/td[1]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/em/button/span
 #    Assign ID To Element  ${DialogMountButton}  btnMountdlg
 #    ${WE} =  Get WebElement  btnMountdlg
 #    LOG  ${WE}
@@ -135,7 +190,14 @@ Mount Device Via NFS
     #Click Button  //button[contains(@class, ' x-btn-text')]/span[contains(@class,'smux-l10n ')]
     #//button[.//text() = 'Mount']
     #css:#ext-gen1231
-
+    #xpath://*[@class="smux-l10n " and contains(text(),"Mount")]
+    #xpath://*[@class=" x-btn-text"]
+    #
+    #Click Button  xpath://button[contains(@class," x-btn-text")]/span[contains(@class,"smux-l10n ")]
+    #xpath://button[@class=" x-btn-text"]
+    #xpath://button[.//text() = "Mount" and @id = "ext-gen1238"]
+    #xpath://*[@class="x-btn wizard-button x-btn-noicon"]
+    #Click Button    css:input[type='Mount']
 #==========================Scrap Book=================================================================
 #//*[@id="ext-gen1211"]
 #//*[@id="ext-comp-1613"]/tbody/tr[2]/td[2]
