@@ -7,8 +7,13 @@ Resource  ../Resources/PO/VM-Page.robot
 Test Setup  Begin Web Test
 Test Teardown  End Web Test
 
+#  How to execute RFW test cases?
 #robot -d results tests/EverRun-Stage.robot
 #robot -d results -i DevTest1 tests/EverRun-Stage.robot
+#robot --reporttitle "Babybird Test Report"  --logtitle  "Babybird Test Log"
+#robot --critical 100iS -c 100iD   #--critical=-c
+#robot --noncritical 110iS -n 100iS
+#robot --timestampouts  110iD -t 100iS # --timestamouts = -*** test cases ***
 
 *** Variables ***
 ${BROWSER} =  gc
@@ -17,6 +22,7 @@ ${USER} =  admin
 ${PWD} =  admin
 ${GLOBAL1}  I am a global variable
 ${VMNAME} =  Windows2k16
+${USB} =  hp v215b - Partition1(14.9 GB)
 
 *** Test Cases ***
 
