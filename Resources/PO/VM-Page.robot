@@ -27,8 +27,13 @@ ${YesButton} =  xpath://*[@class="smux-l10n " and contains(text(),'Yes')]
 ${Reqd_USB} =  xpath:/html/body/div[52]/div/div[1]
 ${SelectedUSBDDL} =  xpath://*[@class="smux-l10n " and contains(text(),"USB Partition List")]
 
+${RemoveVMButton} =  xpath://*[@class=" x-btn-text vm-destroy-cmd-icon"]
+${RemoveVMDialog} =  xpath://*[@class=' sn-window x-window-plain x-window-dlg']
+${RemoveVMAllVols} =  xpath://*[@class="smux-l10n " and contains(text(),"all")]
+${RemoveVMDeleteVM} =  xpath://*[@class="smux-l10n " and contains(text(),"Delete VM")]
 
 *** Keywords ***
+
 Go To VM Page
     Click Element  ${VMPageNav}
     Wait Until Page Contains Element  ${VMPageTitle}
@@ -98,6 +103,7 @@ Get Table Element
     [Arguments]  ${Unique_ID}
     Log  Searching the table for the given unique ID : ${Unique_ID}
     @{WebElmts} =  Get WebElements  xpath://table
+    Set Test Variable  ${MyWebElmnt}  Not Found
     Set Test Variable  @{WebElmts}
     ${WebElmtsNum} =  Get Length  ${WebElmts}
     : FOR  ${a}  IN RANGE  ${WebElmtsNum}
@@ -173,8 +179,38 @@ Mount Device Via USB
     Click Element  ${Reqd_USB}
     Hit Mount And Verify
 
+Open Remove VM Dialog
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${RemoveVMButton}
+    Element Should Be Enabled  ${RemoveVMButton}
+    Click Element  ${RemoveVMButton}
+    sleep  2s
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${RemoveVMDialog}
 
-#Todo  Keyword for unmount and remove VM to be written.
+Remove Selected VM
+    Open Remove VM Dialog
+    Click Element  ${RemoveVMAllVols}
+    Click Element  ${RemoveVMDeleteVM}
+    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${YesButton}
+    Click Element  ${YesButton}
+    Sleep  180s
+
+Verify VM Is Removed
+    [Arguments]  ${GIVEN_VM}
+    Go To VM Page
+    ${Reqd_Element} =  Get Table Element  ${GIVEN_VM}
+    Should Be Equal  ${Reqd_Element}  Not Found  ignore_case=True
+
+
+#==========================Scrap Book=================================================================
+    #${WebElmText} =  Get Text  ${Reqd_Element}
+#    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${PowerOffVMButton}
+#    Element Should Be Enabled  ${PowerOffVMButton}
+#    Click Button  ${PowerOffVMButton}
+#    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${YesButton}
+#    Get Text  ${YesButton}
+#    Click Element  ${YesButton}
+
+
 #//*[@id="ext-gen1450"]/span
 #ext-gen1450 > span
 #ext-gen1323 > span:nth-child(1)
@@ -198,7 +234,6 @@ Mount Device Via USB
     #xpath://button[.//text() = "Mount" and @id = "ext-gen1238"]
     #xpath://*[@class="x-btn wizard-button x-btn-noicon"]
     #Click Button    css:input[type='Mount']
-#==========================Scrap Book=================================================================
 #//*[@id="ext-gen1211"]
 #//*[@id="ext-comp-1613"]/tbody/tr[2]/td[2]
 #ext-comp-1613
@@ -333,3 +368,5 @@ Mount Device Via USB
 #If necessary isolate by table or td, for example css=(table#some_id a[title='Audio'])
     #Click Button  //button[.//text() = 'Mount']
     #Click Button  xpath=//span[contains(text(),'Mount')]
+
+#ext-gen2175 > table > tbody > tr > td.x-grid3-col.x-grid3-cell.x-grid3-td-namecol > div
