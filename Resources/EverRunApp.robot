@@ -1,6 +1,8 @@
-Documentation  Talk about what this suite of test cases does.
+Documentation  Keyword file. Second level file intermediating between POs and Test Cases script. In future this could be
+Documentation  a collection of related keywords required for a set of test cases.
 
 *** Settings ***
+Library  ../Libraries/Perform_TLO.py
 Library  SeleniumLibrary
 Resource  ./CommonWeb.robot
 Resource  ./PO/LoginPage.robot
@@ -14,7 +16,7 @@ Resource  ./PO/VM-Page.robot
 
 
 *** Keywords ***
-
+#<========================VM Page Keywords------------------------------->
 Go To Landing Page
     LoginPage.Navigate To
     LoginPage.Verify Page Loaded
@@ -58,3 +60,38 @@ Mount A Device
     #VM-Page.Mount Device Via NFS
     #VM-Page.Unmount Device And Verify
 
+Remove A VM
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    VM-Page.Go To VM Page
+    VM-Page.Select a given VM  ${VMNAME}
+    VM-Page.Remove Selected VM
+    VM-Page.Verify VM Is Removed  ${VMNAME}
+
+#<========================PM Page Keywords------------------------------->
+Work On Selected PM
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    PM-Page.Go To PM Page
+    PM-Page.Select a given PM  ${PMNAME}
+    PM-Page.Hit Work On And Confirm
+    PM-Page.Verify Given Node State In Maintenance  ${PMNAME}  running (in Maintenance)
+
+Finalize A PM
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    PM-Page.Go To PM Page
+    PM-Page.Select a given PM  ${PMNAME}
+    PM-Page.Hit Finalize And Confirm
+    PM-Page.Verify Given Node Moves To Normal  ${PMNAME}
+
+Shutdown A PM
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    PM-Page.Go To PM Page
+    PM-Page.Select a given PM  ${PMNAME}
+    PM-Page.Shutdown Selected PM
+    PM-Page.Verify Given Node State In Maintenance  ${PMNAME}  powered off (in Maintenance)
+
+Reboot A PM
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    PM-Page.Go To PM Page
+    PM-Page.Select a given PM  ${PMNAME}
+    PM-Page.Reboot Selected PM
+    PM-Page.Verify Given Node State In Maintenance  ${PMNAME}  rebooting (in Maintenance)
