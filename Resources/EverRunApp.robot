@@ -1,16 +1,15 @@
 Documentation  Keyword file. Second level file intermediating between POs and Test Cases script. In future this could be
-Documentation  a collection of related keywords required for a set of test cases.
+...    a collection of related keywords required for a set of test cases.
 
 *** Settings ***
-Library  ../Libraries/Perform_TLO.py
 Library  SeleniumLibrary
+Library  SSHLibrary
 Resource  ./CommonWeb.robot
 Resource  ./PO/LoginPage.robot
 Resource  ./PO/StratusBanner.robot
 Resource  ./PO/PM-Page.robot
 Resource  ./PO/VM-Page.robot
-
-
+Resource  ./PO/RemoteExec.robot
 
 *** Variables ***
 
@@ -95,3 +94,22 @@ Reboot A PM
     PM-Page.Select a given PM  ${PMNAME}
     PM-Page.Reboot Selected PM
     PM-Page.Verify Given Node State In Maintenance  ${PMNAME}  rebooting (in Maintenance)
+
+#<========================RemoteExec Keywords------------------------------->
+
+Login and Execute Command on the remote host
+    RemoteExec.Open Connection And Log In  ${REMOTE-HOST}  ${REMOTE-USER}  ${REMOTE-PASSWORD}
+    Execute And Get Output Downloaded  ls -la  ls.output  C:\\Users\\akumar1\\
+    #RemoteExec.Execute Chain Of Commands In An Interactive Session  ${CMDLine}  ${CustomPrompt}  ${TimeOut}
+    #RemoteExec.Execute Command And Verify Output  ${CMDLine}  ${ExpectedOutput}
+    #RemoteExec.Execute Command And Verify Return Code  ${CMDLine}
+
+Execute Command Download Output File From the Remote Host
+    RemoteExec.Open Connection And Log In  ${REMOTE-HOST}  ${REMOTE-USER}  ${REMOTE-PASSWORD}
+    RemoteExec.Execute And Get Output Downloaded  ${CMDLine}  ${SourceFile}  ${Destination}
+
+Transfer Script To Remote Host Execute And Download Output File
+    RemoteExec.Open Connection And Log In  ${REMOTE-HOST}  ${REMOTE-USER}  ${REMOTE-PASSWORD}
+    RemoteExec.Put File To The Remote Server  ${T19191-SourceFile}  ${T19191-TargetDir}  ${T19191-Mode}
+    RemoteExec.Execute And Get Output Downloaded  ${T19191-CmdLine}  ${T19191-OutputFile}  ${T19191-Destination}
+
