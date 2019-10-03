@@ -1,9 +1,11 @@
 *** Settings ***
 #Library  SeleniumLibrary
+Resource  Suite_Variables.robot
 Resource  ../Resources/EverRunApp.robot
 Resource  ../Resources/CommonWeb.robot
 Resource  ../Resources/PO/VM-Page.robot
 Resource  ../Resources/PO/PM-Page.robot
+Library  ../Libraries/Perform_TLO.py
 
 Test Setup  Begin Web Test
 Test Teardown  End Web Test
@@ -24,18 +26,28 @@ Test Teardown  End Web Test
 #robot --timestampouts  110iD -t 100iS
 #robot -d results --randomize tests [suites,all,none]  tests/EverRun-Stage.robot
 #robot -d results --loglevel [ or -L ] debug tests/EverRun-Stage.robot  OR  Set Log Level  Debug (in the script)
+#
 #====================================================================================================
 
 *** Variables ***
+
 ${BROWSER} =  gc
 ${URL} =  http://10.200.129.205
 ${USER} =  admin
-${PWD} =  admin
+${PWD} =  admin_Test
 ${GLOBAL1}  I am a global variable
 ${VMNAME} =  MyCentos74
 ${USB} =  hp v215b - Partition1(14.9 GB)
 ${PMNAME} =  node0
 ${PrimaryPM} =  None
+${CMDLine} =  avcli node-info
+${CustomPrompt} =  [node0-node0] ~ $
+${TimeOut} =  20 seconds
+${ExpectedOutput} =  Hello Universe!
+${SourceFile} =  node-info.output
+#Current directory
+${Destination} =  .
+#C:\\Users\\akumar1\\
 
 *** Test Cases ***
 # Test Case Naming Conventions:
@@ -131,5 +143,19 @@ Should be able to Reboot a PM
     [Tags]  DevTest9
     Reboot A PM
 
+Should be able to run a command on the remote host
+    [Documentation]  Verify ability to login and run a command line on the remote host.
+    [Tags]  DevTest10
+    Login and Execute Command on the remote host
 
+eE-1915
+    #Should be able to run a command and download output file from the remote host
+    [Documentation]  Verify ability to login and run a command line on the remote host, redirect its output to a file and download the output file.
+    [Tags]  DevTest11
+    Execute Command Download Output File From the Remote Host
+    LOG  ${TEST_NAME}
 
+Should be able to execute a shell script on remote server
+    [Documentation]  Verify ability to login and transfer a shell script, execute on remote host, redirect its output to a file and download the output file.
+    [Tags]  DevTest12
+    Transfer Script To Remote Host Execute And Download Output File

@@ -16,6 +16,10 @@
 #robot --timestampouts  110iD -t 100iS
 #robot -d results --randomize tests [suites,all,none]  tests/EverRun-Stage.robot
 #robot -d results --loglevel [ or -L ] debug tests/EverRun-Stage.robot  OR  Set Log Level  Debug (in the script)
+#Overriding variable values from command line.
+#robot -v HOST:my.server.com -v USERNAME:johndoe -v PASSWORD:secretpasswd executing_commands.txt
+ToDo  robot --variable HOST:localhost:7272
+ToDo  --variablefile path/to/variables.py
 
 #====================================================================================================
 
