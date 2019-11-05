@@ -2,11 +2,11 @@
 Library  SeleniumLibrary
 Library  String
 Library  SSHLibrary
-Suite Setup  Open Connection And Log In
-Suite Teardown  Close All Connections
+#Suite Setup  Open Connection And Log In
+#Suite Teardown  Close All Connections
 
 *** Variables ***
-${REMOTE-HOST} =  10.200.129.13
+${REMOTE-HOST} =  10.200.129.205
 ${REMOTE-USER} =  root
 ${REMOTE-PASSWORD} =  KeepRunning
 
@@ -40,9 +40,7 @@ Execute Chain Of Commands In An Interactive Session
     ...               Or like cd ..;ls;hostname;uptime
     [Arguments]  ${CMDLine}  ${CustomPrompt}  ${TimeOut}
     Set Client Configuration  prompt=${CustomPrompt}  timeout=${TimeOut}
-    Write  ${CMDLine}[Documentation]    Execute Command always executes the command in a new shell.  This means that changes to the environment
-    ...                are not persisted between subsequent Execute Command keyword calls. Hence you might use Write and Read Until variants
-    ...               if you want to operate in the same shell (in an interactive shell).
+    Write  ${CMDLine}
     ${Output} =  Read Until Prompt
     Should End With  ${Output}  ${CustomPrompt}
     [Return]  ${Output}
@@ -65,6 +63,13 @@ Put File To The Remote Server
     [Arguments]  ${SourceFile}  ${Destination}  ${Mode}
     LOG  Putting a file onto the remote server. (with or without file mode change.)
     Put File  ${SourceFile}  ${Destination}  ${Mode}
+
+Get File From The Remote Server
+    [Documentation]    Get a file from Source directory on the remote server  to a local destination directory.
+    ...                For other possibilities refer to Get File keyword description under SSHLibrary.
+    [Arguments]  ${SourceFile}  ${Destination}
+    LOG  Getting a file from the remote server.
+    Get File  ${SourceFile}  ${Destination}
 
 
 

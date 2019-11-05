@@ -135,3 +135,7 @@ Verify Given Node Moves To Normal
     Set Test Variable  ${ExpStr}  running
     Run Keyword If  '${ExpStr}' in @{RetrievedValues}  Log  ${ExpStr} found in @{RetrievedValues}
 
+#ToDo  yum install dos2unix -y   --  install on both nodes in suite setup.
+
+
+
