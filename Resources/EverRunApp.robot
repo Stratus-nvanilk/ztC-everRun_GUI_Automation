@@ -10,6 +10,7 @@ Resource  ./PO/StratusBanner.robot
 Resource  ./PO/PM-Page.robot
 Resource  ./PO/VM-Page.robot
 Resource  ./PO/RemoteExec.robot
+Resource  ../Resources/PO/VCD-Page.robot
 
 *** Variables ***
 
@@ -110,6 +111,17 @@ Execute Command Download Output File From the Remote Host
 
 Transfer Script To Remote Host Execute And Download Output File
     RemoteExec.Open Connection And Log In  ${REMOTE-HOST}  ${REMOTE-USER}  ${REMOTE-PASSWORD}
-    RemoteExec.Put File To The Remote Server  ${T19191-SourceFile}  ${T19191-TargetDir}  ${T19191-Mode}
-    RemoteExec.Execute And Get Output Downloaded  ${T19191-CmdLine}  ${T19191-OutputFile}  ${T19191-Destination}
+    RemoteExec.Put File To The Remote Server  ${SourceFile}  ${TargetDir}  ${Mode}
+    RemoteExec.Execute And Get Output Downloaded  ${CmdLine}  ${OutputFile}  ${Destination}
 
+Transfer Script To Remote Host Execute And Verify Return Code
+    RemoteExec.Open Connection And Log In  ${REMOTE-HOST}  ${REMOTE-USER}  ${REMOTE-PASSWORD}
+    RemoteExec.Put File To The Remote Server  ${SourceFile}  ${TargetDir}  ${Mode}
+    RemoteExec.Execute And Get Output Downloaded  ${CmdLine}  ${OutputFile}  ${Destination}
+
+#<========================VCD Page Keywords------------------------------->
+
+Remove A VCD
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    VCD-Page.Go To VCD Page
+    #PM-Page.Select a given PM  ${PMNAME}
