@@ -6,7 +6,8 @@ Resource  ../CommonWeb.robot
 *** Variables ***
 ${VMPageNav} =  id:vmNav
 ${VMPageTitle} =  xpath://*[@class="vmTitle viewTitle"]
-${VMTableRows} =  //*[starts-with(@class, 'x-grid3-row')]
+
+${VMTableRows} =  //*[starts-with(@class, 'x-grid3-row-table')]
 ${MountButton} =  xpath://*[@class=" x-btn-text vm-mount-cmd-icon"]
 ${MountDialog} =  xpath://*[@class=' sn-window']
 ${MountRadioGroup} =  device
@@ -36,6 +37,19 @@ ${RemoveVMDeleteVM} =  xpath://*[@class="smux-l10n " and contains(text(),"Delete
 ${ClearMTBFButton} =  xpath://*[@class="smux-l10n " and contains(text(),"Clear MTBF")]
 #${ResetDeviceButton} =  xpath://*[@class="smux-l10n " and contains(text(),"Reset Device")]
 ${ResetDeviceButton} =  xpath://*[@class=" x-btn-text test-icon"]
+#Monitor Tab
+${VMP-Monitor-Tab} =  xpath://*[@class="smux-l10n " and contains(text(),"Monitor")]
+${VMP-MT-Guest_OS-Pane} =  xpath://*[@class="smux-l10n " and contains(text(),"Guest OS")]
+${AllTickedCheckBoxes} =  //*[starts-with(@class, 'x-grid3-check-col-on')]
+${VMP-MT-Applications-Pane} =  xpath://*[@class="smux-l10n " and contains(text(),"Applications")]
+${VMP-MT-Empty-Pane} =  xpath://*[@class="smux-l10n " and contains(text(),"Linux VMs do not support monitoring.")]
+${MonitorTabSaveButton} =  xpath://table[@class="x-btn wizard-button x-btn-noicon"]//button[@class=" x-btn-text"]//span[@data-l10nkey="btn_save" and contains(text(),'Save')]
+#Load Balance Tab
+${VMP-Load-Balance-Tab} =  xpath://*[@class="smux-l10n " and contains(text(),"Load Balance")]
+${VMP-LoadBalance-FFTrigger} =  xpath://div[@id="vmPreferredNodeTabId"]//div[@class="x-form-element"]//div[@class="x-form-field-wrap x-form-field-trigger-wrap"]
+${VMP-LoadBalance-ComboList} =  xpath://div[@class="x-layer x-combo-list "]//div[@class="x-combo-list-inner"]//div[@class="x-combo-list-item" and contains(text(),${LBOption})]
+
+
 
 
 *** Keywords ***
@@ -108,7 +122,7 @@ Power Off Selected VM
     Click Element  ${YesButton}
     sleep  180s
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+#ToDo  This is going beyond Unique ID in the list. Need to be conformant with Select Table Element Get Data
 Get Table Element
     [Arguments]  ${Unique_ID}
     Log  Searching the table for the given unique ID : ${Unique_ID}
@@ -165,22 +179,23 @@ Select Table Element Get Data
     Set Test Variable  ${WebElmText}  ${EMPTY}
     Set Test Variable  ${WebElmtsNum}  ${EMPTY}
     @{WebElmts} =  Get WebElements  ${VMTableRows}
+
     Log Many  @{WebElmts}
     ${WebElmtsNum} =  Get Length  ${WebElmts}
 
     : FOR  ${a}  IN RANGE  ${WebElmtsNum}
+    \    Run Keyword If    ${a}>=${WebElmtsNum}  Exit For Loop
     \    @{lines} =  Create List
-    \    Run Keyword If    ${a}>=${WebElmtsNum}   Exit For Loop
     \    @{WebElmts} =  Get WebElements  ${VMTableRows}
     \    ${WebElmText} =  Get Text  @{WebElmts}[${a}]
     \    Log  ${WebElmText}
     \    Run Keyword If	'''${WebElmText}''' == ''  Continue For Loop
     \    Log  @{WebElmts}[${a}]
-    \    @{lines} =	 Split To Lines  ${WebElmText}
-    \    Run Keyword If  '${Unique_ID}' in @{lines}  Click Element  @{WebElmts}[${a}]
-    \    Run Keyword If  '${Unique_ID}' in @{lines}  Set Test Variable  @{ElementData}  @{lines}
-    \    Run Keyword If  '${Unique_ID}' in @{lines}  Exit For Loop
-    \    ...    ELSE IF  '${Unique_ID}' not in @{lines}  Continue For Loop
+    \    @{lines} =	 CommonWeb.Split Lines On String Return Stripped List  ${WebElmText}
+    \    Run Keyword If  '''${Unique_ID}''' in ascii(@{lines})  Click Element  @{WebElmts}[${a}]
+    \    Run Keyword If  '''${Unique_ID}''' in ascii(@{lines})  Set Test Variable  @{ElementData}  @{lines}
+    \    Run Keyword If  '''${Unique_ID}''' in ascii(@{lines})  Exit For Loop
+    \    Run Keyword Unless  '''${Unique_ID}''' not in ascii(@{lines}) and ${WebElmtsNum} - ${a} == 1  Set Test Variable  @{ElementData}  @{EMPTY}
 
     [Return]  @{ElementData}
 
@@ -316,214 +331,84 @@ Hit Reset Device and Confirm
     Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${YesButton}
     Click Element  ${YesButton}
     Sleep  10s
+#---------------------------------------------------------------------------------------
+#VM-Page Monitoring Tab
+#---------------------------------------------------------------------------------------
 
-
-#==========================Scrap Book=================================================================
-#Successfully identifies -->   Set Test Variable  ${MyElement}  xpath://*[starts-with(@class, 'x-grid3-row') and contains(text(),${Unique_ID})]
-    #./T849.sh AS-CentOS76  >> blahblah.txt 2>&1  &  ./T849.sh OS-CentOS76 >> blahblah.txt 2>&1
-    # avcli vm-info OS-CentOS76 | grep id | grep vm | awk -F " " '{print $4}'
-    #Wait Until Keyword Succeeds  3 min  30 sec  Reload Page
-    #${WebElmText} =  Get Text  ${Reqd_Element}
-#    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${PowerOffVMButton}
-#    Element Should Be Enabled  ${PowerOffVMButton}
-#    Click Button  ${PowerOffVMButton}
-#    Wait Until Keyword Succeeds  3 min  30 sec  Element Should Be Visible  ${YesButton}
-#    Get Text  ${YesButton}
-#    Click Element  ${YesButton}
-#<div class="vm-namecol" title="This Virtual Machine cannot be renamed unless it is stopped.">MyWin7</div>
-
-#//*[@id="ext-gen1450"]/span
-#ext-gen1450 > span
-#ext-gen1323 > span:nth-child(1)
-#/html/body/div[50]/div[2]/div[2]/div/div/div/div[1]/table/tbody/tr/td[1]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/em/button/span
-#    Assign ID To Element  ${DialogMountButton}  btnMountdlg
-#    ${WE} =  Get WebElement  btnMountdlg
-#    LOG  ${WE}
-#    Mouse Over  ${WE}
-#    Press Keys  ${WE}  RETURN
-    #Click Element  css=#ext-comp-1991 > tbody > tr:nth-child(2) > td.x-btn-mc
-    #${cssMB} =  Get Element Attribute  btnMountdlg  attribute=xpath
-    #Click Element  ${cssMB}
-    #Click Button  //button[contains(@class, ' x-btn-text')]/span[contains(@class,'smux-l10n ')]
-    #//button[.//text() = 'Mount']
-    #css:#ext-gen1231
-    #xpath://*[@class="smux-l10n " and contains(text(),"Mount")]
-    #xpath://*[@class=" x-btn-text"]
+Open Monitor Tab Expand and Verify Panes
+    [Arguments]  ${VM_OS}
+    Log  Opening Monitor tab for the selected VM and verifying the panes.
+    Click Element  ${VMP-Monitor-Tab}
+    Run Keyword And Return If  '${VM_OS}' == 'Linux'  Page Should Contain Element  ${VMP-MT-Empty-Pane}
     #
-    #Click Button  xpath://button[contains(@class," x-btn-text")]/span[contains(@class,"smux-l10n ")]
-    #xpath://button[@class=" x-btn-text"]
-    #xpath://button[.//text() = "Mount" and @id = "ext-gen1238"]
-    #xpath://*[@class="x-btn wizard-button x-btn-noicon"]
-    #Click Button    css:input[type='Mount']
-#//*[@id="ext-gen1211"]
-#//*[@id="ext-comp-1613"]/tbody/tr[2]/td[2]
-#ext-comp-1613
-#ext-comp-1613 > tbody
-#//*[@id="ext-gen1212"]/span
+    @{CollapsedPanes} =  Create List
+    @{CollapsedPanes} =  Get WebElements  xpath://*[@class="x-panel x-panel-collapsed"]
+    Run Keyword And Return If  @{CollapsedPanes} == @{EMPTY}  Log Many  Looks like there are no collapsed panes :  @{CollapsedPanes}
+    Run Keyword if @{CollapsedPanes}[0]  Click Element  @{CollapsedPanes}[0]
+    Run Keyword if @{CollapsedPanes}[1]  Click Element  @{CollapsedPanes}[1]
+    #
+    @{ExpandedPanes} =  Create List
+    @{ExpandedPanes} =  Get WebElements  xpath://*[@class="x-panel"]
+    Log Many  @{ExpandedPanes}
+    Run Keyword And Return If  @{ExpandedPanes} == @{EMPTY}  Log Many  Looks like there are no expanded panes :  @{ExpandedPanes}
 
-    #\    ${matches} =  Should Match Regexp  (?im)${Unique_ID}  ${WebElmText}
-    #//*[@id="ext-gen1251"]/table
-    #//*[@id="vm"] => Table xpath
-    #xpath://*[@id="ext-gen763"]
-    #Get Table Row Values  css=html.ext-strict.x-viewport body#ext-gen3.ext-gecko.ext-gecko3.x-border-layout-ct div#ext-comp-1029.x-panel.x-panel-noborder.x-border-panel div#ext-gen15.x-panel-bwrap div#ext-gen16.x-panel-body.x-panel-body-noheader.x-panel-body-noborder div#vm.x-panel.x-panel-noborder div#ext-gen242.x-panel-bwrap div#ext-gen243.x-panel-body.whitepanel.x-panel-body-noheader.x-panel-body-noborder.x-border-layout-ct div#ext-comp-1377.x-panel.x-panel-noborder.x-grid-panel.x-border-panel div#ext-gen673.x-panel-bwrap div#ext-gen674.x-panel-body.x-panel-body-noheader.x-panel-body-noborder div#ext-gen675.x-grid3 div#ext-gen676.x-grid3-viewport div#ext-gen678.x-grid3-scroller  1
-    #Assign ID To Element  xpath://*[@class='vm-namecol' and @value=${GIVEN_VM}]  TargetVM
-    # working --> xpath://*[@class='vm-namecol' and contains(text(),${GIVEN_VM})]  TargetVM
-    #Click Element  TargetVM
-    #xpath://*[@id="ext-gen1271"]/table/tbody/tr/td[4]/div/div
-    #xpath://*[@class='vm-namecol']  xpath://*[@id="ext-gen1271"]
-    #="Windows_2k16_VM2"]
-    #Click Element  xpath://*[@class='vm-namecol'  xpath://*[matches(@value,${GIVEN_VM},'i')]
-    #Click Element  xpath://*[@class[contains(text(),${GIVEN_VM})]
-    #//*[@id="ext-gen1234"]/table/tbody/tr/td[4]/div/div
-    #//*[@id="ext-gen1233"]/table/tbody/tr/td[4]/div/div
-    #//*[@id="ext-gen1280"]/table/tbody/tr/td[4]/div/div
-    #//*[@id="ext-gen1291"]/table/tbody/tr/td[4]/div/div document.querySelector("#ext-gen771 > div > span")
-    #ext-gen1267 > table > tbody > tr > td.x-grid3-col.x-grid3-cell.x-grid3-td-namecol > div > div //*[@id="ext-gen771"]/div/span
-    #${row}= Find Table Row  css=#ext-comp-1378  ${GIVEN_VM}
-    #ext-gen1263 > table > tbody > tr > td.x-grid3-col.x-grid3-cell.x-grid3-td-namecol > div > div
-    #//*[@id="ext-gen1271"]/table/tbody/tr/td[4]/div/div
-    #document.querySelector("#ext-gen1280 > table > tbody > tr > td.x-grid3-col.x-grid3-cell.x-grid3-td-namecol > div > div")
-    #<div class="vm-namecol" title="This Virtual Machine cannot be renamed unless it is stopped.">Windows_2k16_VM2</div>
-    #/html/body/div[2]/div/div/div[7]/div/div/div[1]/div/div/div/div[1]/div[2]/div/div[2]/table/tbody/tr/td[3]/div/div
-    #html.ext-strict.x-viewport body#ext-gen3.ext-gecko.ext-gecko3.x-border-layout-ct div#ext-comp-1029.x-panel.x-panel-noborder.x-border-panel div#ext-gen15.x-panel-bwrap div#ext-gen16.x-panel-body.x-panel-body-noheader.x-panel-body-noborder div#vm.x-panel.x-panel-noborder div#ext-gen242.x-panel-bwrap div#ext-gen243.x-panel-body.whitepanel.x-panel-body-noheader.x-panel-body-noborder.x-border-layout-ct div#ext-comp-1377.x-panel.x-panel-noborder.x-grid-panel.x-border-panel div#ext-gen673.x-panel-bwrap div#ext-gen674.x-panel-body.x-panel-body-noheader.x-panel-body-noborder div#ext-gen675.x-grid3 div#ext-gen676.x-grid3-viewport div#ext-gen678.x-grid3-scroller div#ext-gen680.x-grid3-body div#ext-gen1211.x-grid3-row.x-grid3-row-last table.x-grid3-row-table tbody tr td.x-grid3-col.x-grid3-cell.x-grid3-td-namecol div.x-grid3-cell-inner.x-grid3-col-namecol div.vm-namecol
-    ##ext-gen1215 > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1)
-    #//*[@id="ext-gen1364"]/table/tbody/tr/td[4]/div/div
+Select Row With Given Parameter On Monitor Tab Guest OS Table
+    [Arguments]  ${GivenParameter}
+    Log  Select a row in the Guest OS table with parameter column value matching the given Guest OS Parameter.
+    Log  Assumes the Guest OS pane of the Monitor tab on the VM Page is open.
+    Set Test Variable  ${GuestOSParameterCell}  xpath://div[contains(@class,"monitor-config-grid")]//td[@class="x-grid3-col x-grid3-cell x-grid3-td-1 "]//div[contains(text(),"${GivenParameter}")]
+    Click Element  ${GuestOSParameterCell}
 
-    #id=vmNavStateIcon
-    #and matches(@value,"Virtual Machines",'i')]
-    #contains(text(),"Virtual Machines")]
-    #@class='smux-l10n' and
-    #Title Should be  VIRTUAL MACHINES
-    #${TargetVM} =  xpath://*[@class='vm-namecol' and contains(text(),${GIVEN_VM})]
-    #${Req_Cell} =  Get Table Cell  xpath=//table  2  3
-    #${Val} =  Get Value  xpath=//table
-    #Log  ${Val}
-    #Log  ${Req_Cell}
-    #ext-gen753 > span
-    #Working ones:
-    #Wait Until Page Contains  ${WE}
-    #xpath://*[@class="x-btn-small x-btn-icon-small-left"]
-    #${YesButton} =  xpath://*[@id="ext-gen1249" and contains(text(),"Yes")]
-    #//*[@id="ext-comp-1714"]/tbody
-    #ext-comp-1714 > tbody
-    #ext-comp-1714 > tbody > tr:nth-child(2) > td.x-btn-mc
-    #//*[@id="ext-comp-1714"]/tbody/tr[2]/td[2]
-    #//*[@id="ext-comp-1714"]
-    #xpath://*[@id="ext-gen1249"]
-    #xpath://*[@id="ext-gen1249"]
-    #Wait Until Page Contains Element  ${YesButton}
-    #//*[@id="ext-comp-1388"]
-    #So first I added control, if there is this table element and it tells me TRUE every time:
-    #${present} =    Run Keyword And Return Status    Element Should Be Visible    xpath=//table[contains(@id,'table1')]/tbody
-    #Run Keyword If    ${present}    log to console    \nTABLE CELL ELEMENT EXISTS - ${present}
-    #//*[@id="ext-gen1253"]/table/tbody/tr/td[4]
-    #//*[@id="ext-gen1281"]/table/tbody/tr/td[2]
-#    :FOR    ${i}    IN RANGE    ${startvalue}    ${endvalue}    step=${step}
-#
-#\        Run Keyword If  condition1 or condition2  Call_Keyword  ${val1}  {val2}
-#\        Run Keyword If  condition3  exit for loop
-    #\    Should Contain  $ElmntText  $Unique_ID  ignore_case=True
-    #Exit For Loop if    '$Unique_ID' in '''$ElmntText'''
-    #@{WebElmtsList} =  Create List  @{WebElmts}
-    #${MyWebElmnt} =  ${None}
-    #Set Test Variable  ${MyWebElmnt}  ${a}
-    #run keyword if  $Unique_ID in $ElmntText  LOG TO CONSOLE  Hello
-    #Set Test Variable    ${WE}    @{WebElmts}[${a}]
-    #${WebElmText} =  Get Text  ${WE}
-    #${ElmntText} =  Get Text  @{WebElmts}[${a}]
-    #Log  ${ElmntText}
-    #LOG TO CONSOLE  ${MyWebElmnt}
-    #Exit For Loop if    '$Unique_ID' in '''$WebElmText'''
-    #${stripped}=  Strip String  ${WebElmText}  mode=both
-    #@{lines} =	 Split To Lines  ${stripped}
-#    @{cells}=  Get WebElements  xpath://table
-#    : FOR    ${a}  IN RANGE  0  100
-#    \    ${CellText} =  Get Text  @{cells}[${a}]
-#    \    Log  ${CellText}
-#
-#    Assign ID To Element  xpath://*[@class='vm-namecol' and contains(text(),${GIVEN_VM})]  TargetVM
-#    Scroll Element Into View  TargetVM
-#    #Table Column Should Contain  xpath://table  2  stopped
-#    ${CellVal} =  Get WebElement  xpath://table/tbody/tr[2]//td[3]
-#    ${CellText} =  Get Text  ${CellVal}
-#    LOG  ${CellVal}
-#    LOG  ${CellText}
-#    #Element Text Should Be  ${CellVal}  stopped  ignore_case=True
-#    ${CellText}=  Get Value  ${CellVal}
-#    LOG  ${CellText}
-    #Table Cell Should Contain  xpath://table/tbody/tr[2]//td[2]  stopped
-    #Table Cell Should Contain  xpath://table  2  3  stopped
-    #${Req_Cell} =  create list  Get Table Cell  xpath://table  1  2
-#    @{Req_Cell} =  Get Table Cell  xpath://*[@id="vm"]  2  3
-#    LOG  @{Req_Cell}
-#    @{cells}=  Get WebElements  xpath://table
-#    : FOR    ${a}  IN  0  100
-#  \    Log  @{cells}[${a}]
-#    #LOG  @{cells}
-    #Wait Until Page Contains  ${WE}
-    #    ${Req_Cell} =  Get Table Cell  xpath://*[@class="x-grid3" and contains(text(),${GIVEN_VM})]  2  3
-#    LOG  ${Req_Cell}
-    #Press Keys  TargetVM  RETURN
-    #Element Should Be Focused  TargetVM
-    #Confirm Action
-    #Alert Should Be Present  timeout=180 s
-    #Wait Until Keyword Succeeds  3 min  30 sec  Handle Alert  timeout=30 s
-    #text=Power Off is a non-orderly shutdown of a Virtual Machine, are you sure you want to proceed?
-    #Click Element  //button[@value='Yes']
-    #Assign ID To Element  xpath://*[@class=" x-btn-text" and @value="Yes"]  YesBtn
-    #Handle Alert  action=ACCEPT  timeout=55 s
-    #Get Window Titles
-    #${wt} =  Get Title
-    #Select Window  Title=tlt_confirm
-    #Click Button  Yes
-    #${ct} =  #ext-comp-1619 > tbody > tr:nth-child(2) > td.x-btn-mc
-    #xpath://*[@id="ext-comp-1623"]
-    #${YesButton}
-    #sleep  120s
-    #Click Element  YesBtn
-    #ext-comp-1619 > tbody > tr:nth-child(2) > td.x-btn-mc
-    #//*[@id="ext-comp-1619"]/tbody/tr[2]/td[2]
+Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table
+    [Arguments]  ${CheckboxColumn}
+    Log  Select a checkbox on the selected row on the Guest OS table.
+    [Documentation]  Acceptable values for ${CheckboxColumn} are 0,5,6. 0-->enabled, 5-->CallHome and 6-->EAlert/Trap. Select checkbox 0 first (to enable)
+    ...  to be able to select checkboxes 5 and 6. Assumes the Guest OS pane of the Monitor tab on the VM Page is open and the desirable row is selected.
+    ...  This keyword is a toggle keyword, meaning it can be used again to deselect a selected checkbox.
+    Set Test Variable  ${CheckboxOnSelectedRow}  xpath://div[contains(@class,"monitor-config-grid")]//div[contains(@class,"row-selected")]//td[contains(@class,"x-grid3-td-${CheckboxColumn}")]
+    Click Element  ${CheckboxOnSelectedRow}
 
-#Try using css instead of xpath and use an exact match instead of contains and look at an element or attribute rather than text.
-#So Try using css=(a[title='Audio'])
-#If necessary isolate by table or td, for example css=(table#some_id a[title='Audio'])
-    #Click Button  //button[.//text() = 'Mount']
-    #Click Button  xpath=//span[contains(text(),'Mount')]
+Input A Textbox On The Selected Row On Monitor Tab Guest OS Table
+    [Arguments]  ${TextboxColumn}  ${InputValue}
+    Log  Select a textbox on the selected row on the Guest OS table and input the given value into it.
+    [Documentation]  Acceptable values for ${InputValue} are only numbers from 0 to 9.
+    ...  Assumes the Guest OS pane of the Monitor tab on the VM Page is open and the desirable row is selected.
+    Set Test Variable  ${TextboxOnSelectedRow}  xpath://div[contains(@class,"monitor-config-grid")]//div[contains(@class,"row-selected")]//td[contains(@class,"x-grid3-td-${TextboxColumn}")]//div[starts-with(@class,"x-grid3-cell-inner")]
+    Identify And Click Element  ${TextboxOnSelectedRow}
+    Wait Until Element Is Enabled  ${TextboxOnSelectedRow}
+    Press Keys  ${TextboxOnSelectedRow}  ${InputValue}
+    #Input Text  ${TextboxOnSelectedRow}  ${InputValue}
 
-#ext-gen2175 > table > tbody > tr > td.x-grid3-col.x-grid3-cell.x-grid3-td-namecol > div
-#---------------------------------------------------------------
-#    ${TargetVM} =  Get Table Element  ${GIVEN_VM}
-#    ${WebElmText} =  Get Text  ${TargetVM}
-#    Log  ${WebElmText}
-#    Should Contain   ${WebElmText}  running
-#    Scroll Element Into View  ${TargetVM}
-#    Wait Until Element Is Visible  ${TargetVM}
-#    Wait Until Keyword Succeeds  2 min  20 sec  Identify And Click Element  ${TargetVM}
-#    [Arguments]  ${GIVEN_VM}
-#    Go To VM Page
-
-    #Exit For Loop
-    #Set Test Variable  ${MyWebElmnt}  ${WE}
-    #Set Test Variable
-
-#Click Table Element Create Data Dictionary  @{WebElmts}[${a}]
-#    \    ${stripped}=  Strip String  ${WebElmText}  mode=both
-    #@{WebElmts} =  Get WebElements  xpath://table
-    #${TC} =  Get WebElement  //*[starts-with(@class, 'x-grid3-row-table')]  1  2
-    #${TC} =  Get Table Cell  //*[starts-with(@class, 'x-grid3-row-table')]  1  2
-    #Log  ${TC}
-    #${TC} =  Get Table Cell  xpath://*[@class="x-grid3-body" and contains(text(),${Unique_ID})]  2  2
-#    Set Test Variable  ${MyElement}  xpath://*[starts-with(@class, 'x-grid3-row') and contains(text(),${Unique_ID})]
-#    Wait Until Keyword Succeeds  2 min  20 sec  Identify And Click Element  ${MyElement}
-#    Log  ${MyElement}
-#    Click Table Element Create Data Dictionary  ${MyWebElmnt}
+Get Status Column Value On The Selected Row On Monitor Tab Guest OS Table
+    [Arguments]  ${GivenParameter}  ${GivenCellColumn}
+    Log  Returns the class attribute value held in the given column cell (${GivenCellColumn}) on the selected row in the Guest OS table On Monitor Tab.
+    [Documentation]  Assumes the Guest OS pane of the Monitor tab on the VM Page is open. Selects the row with parameter column value matching ${GivenParameter}.
+    Select Row With Given Parameter On Monitor Tab Guest OS Table  ${GivenParameter}
+    Set Test Variable  ${GivenCellColumnElement}  xpath://div[contains(@class,"monitor-config-grid")]//div[contains(@class,"row-selected")]//td[contains(@class,"x-grid3-td-${GivenCellColumn}")]//div[starts-with(@class,"x-grid3-cell-inner")]//div[starts-with(@class,"state-icon")]
+    ${StatusEAClass} =  Get Element Attribute  ${GivenCellColumnElement}  class
+    [Return]  ${StatusEAClass}
 
 
-#Click Table Element Create Data Dictionary
-#    [Arguments]  ${WE}
-    #Internal to - Select Table Element Get Text
-#    Identify And Click Element  xpath://*[starts-with(@class, 'x-grid3-row') and contains(text(),${Unique_ID})]
-    #Exit For Loop
-#    Wait Until Keyword Succeeds  2 min  20 sec  Identify And Click Element  ${WE}
-#    Set Test Variable  &datadict
-#    &datadict =  Create Dictionary  WebElem=${WE}  WebElmText=${WebElmText}  SplitList=@{lines}
+Get Present Column Value On The Selected Row On Monitor Tab Guest OS Table
+    [Arguments]  ${GivenParameter}  ${GivenCellColumn}
+    Log  Returns the current (present) column value held in the given column cell (${GivenCellColumn}) on the selected row in the Guest OS table On Monitor Tab.
+    [Documentation]  Assumes the Guest OS pane of the Monitor tab on the VM Page is open. Selects the row with parameter column value matching ${GivenParameter}.
+    Select Row With Given Parameter On Monitor Tab Guest OS Table  ${GivenParameter}
+    Set Test Variable  ${GivenCellColumnElement}  xpath://div[contains(@class,"monitor-config-grid")]//div[contains(@class,"row-selected")]//td[contains(@class,"x-grid3-td-${GivenCellColumn}")]//div[starts-with(@class,"x-grid3-cell-inner")]
+    ${CellValue} =  Get Text  ${GivenCellColumnElement}
+    [Return]  ${CellValue}
+
+Open Load Balance Tab
+    Log  Opening Load Balance tab for the selected VM and verifying the panes.
+    Click Element  ${VMP-Load-Balance-Tab}
+    ${GT} =  Get Text  xpath://div[@class="x-form-field-wrap x-form-field-trigger-wrap"]//input[@name="preferrednodevalue"]
+    ${GV} =  Get Value  xpath://div[@class="x-form-field-wrap x-form-field-trigger-wrap"]//input[@name="preferrednodevalue"]
+    Log  ${GT}
+    Log  ${GV}
+
+    Click Element  ${VMP-LoadBalance-FFTrigger}
+    Set Test Variable  ${LBOption}  manually place on node0
+    Set Test Variable  ${VMP-LoadBalance-ComboList}  xpath://div[@class="x-layer x-combo-list "]//div[@class="x-combo-list-inner"]//div[@class="x-combo-list-item" and contains(text(),"${LBOption}")]
+    Click Element  ${VMP-LoadBalance-ComboList}
+    Set Test Variable  ${LoadBalanceTabSaveButton}  xpath://table[@class="x-btn wizard-button x-btn-noicon"]//button[@class=" x-btn-text"]//span[@data-l10nkey="btn_save" and contains(text(),'Save')]
+    Click Element  ${LoadBalanceTabSaveButton}
