@@ -33,7 +33,7 @@ while :
     echo $CMD
 
     virsh qemu-monitor-command $VMName  --hmp --cmd "mce -b 0 0 0xA000000000000001 4 0 0"
-    echo Sleeping for 3 minutes to allow VM to come up yet again...
-    sleep 180
+    echo Sleeping for 5 minutes to allow VM to come up yet again...
+    sleep 300
  done
 
