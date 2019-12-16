@@ -226,7 +226,6 @@ eE-1091
     #VM-Page.Go To VM Page
     #VM-Page.SVVSIR  ${T1091_VMNAME}
     VM-Page.Select VM Verify State Is Running  ${T1091_VMNAME}
-    #CommonWeb.Reload Application Page
     VM-Page.Select VM Verify Button Is Disabled  ${T1091_VMNAME}  ${ResetDeviceButton}
     RemoteExec.Open Connection And Log In  ${REMOTE-HOST}  ${REMOTE-USER}  ${REMOTE-PASSWORD}
     RemoteExec.Put File To The Remote Server  ${T1091_SourceFile}  ${T1091_TargetDir}  ${T1091_Mode}
@@ -250,7 +249,6 @@ eE-1092
     #VM-Page.Go To VM Page
     #VM-Page.SVVSIR  ${T1092_VMNAME}
     VM-Page.Select VM Verify State Is Running  ${T1092_VMNAME}
-    #CommonWeb.Reload Application Page
     VM-Page.Select VM Verify Button Is Disabled  ${T1092_VMNAME}  ${ResetDeviceButton}
     RemoteExec.Open Connection And Log In  ${REMOTE-HOST}  ${REMOTE-USER}  ${REMOTE-PASSWORD}
     RemoteExec.Put File To The Remote Server  ${T1092_SourceFile}  ${T1092_TargetDir}  ${T1092_Mode}
@@ -264,4 +262,71 @@ eE-1092
     Set Test Variable  ${Remote_OutputFile}  ${T1092_OutputFile}
     Set Test Variable  ${Local_Destination_Dir}  ${T1092_Destination}
 
+
+eE-3140
+    [Documentation]  Test Case eE-3140 :: Version : 1 :: Monitoring a Guest during state changes
+    ...             A Guest can be monitored when it boots, when it is migrating, when it is shutting down.
+    ...             Must use a ztC system with the Guest Monitoring enabled license.
+    #[Tags]  zTC100iSingle, zTC110iSingle, zTC100iDual, zTC110iDual,  everRun
+    [Tags]  DT5
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    VM-Page.Select VM Verify State Is Running  ${T3140_VMNAME}
+    #VM-Page.Open Monitor Tab Expand and Verify Panes  Linux
+    VM-Page.Open Monitor Tab Expand and Verify Panes  Windows
+    @{TickedCheckBoxes} =  Get WebElements  ${AllTickedCheckBoxes}
+#    Should Be Equal  @{TickedCheckBoxes}  @{EMPTY}
+    Log Many  @{TickedCheckBoxes}
+    Set Test Variable  ${ParameterValue}  Memory Utilization
+    ${Reqd_CellValue} =  Get Present Column Value On The Selected Row On Monitor Tab Guest OS Table  ${ParameterValue}  11
+    Log  ${Reqd_CellValue}
+
+    Set Test Variable  ${ParameterValue}  CPU Usage
+    #CPU Usage
+    VM-Page.Select Row With Given Parameter On Monitor Tab Guest OS Table  ${ParameterValue}
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  0
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  5
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  6
+
+    Input A Textbox On The Selected Row On Monitor Tab Guest OS Table  3  60
+    Input A Textbox On The Selected Row On Monitor Tab Guest OS Table  4  90
+
+    Set Test Variable  ${ParameterValue}  Memory Utilization
+    #Memory Utilization
+    VM-Page.Select Row With Given Parameter On Monitor Tab Guest OS Table  ${ParameterValue}
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  0
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  5
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  6
+
+    Input A Textbox On The Selected Row On Monitor Tab Guest OS Table  3  60
+    Input A Textbox On The Selected Row On Monitor Tab Guest OS Table  4  90
+    #
+    Set Test Variable  ${ParameterValue}  Used Disk Space
+    #Used Disk Space
+    VM-Page.Select Row With Given Parameter On Monitor Tab Guest OS Table  ${ParameterValue}
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  0
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  5
+    VM-Page.Select A Checkbox On The Selected Row On Monitor Tab Guest OS Table  6
+
+    Input A Textbox On The Selected Row On Monitor Tab Guest OS Table  3  60
+    Input A Textbox On The Selected Row On Monitor Tab Guest OS Table  4  90
+    VM-Page.Select Row With Given Parameter On Monitor Tab Guest OS Table  ${ParameterValue}
+    Sleep  3s
+#    Set Test Variable  ${MonitorTabSaveButton}  xpath://*[@data-l10nkey="btn_save" and contains(text(),'Save')]
+    Set Test Variable  ${MonitorTabSaveButton}  xpath://table[@class="x-btn wizard-button x-btn-noicon"]//button[@class=" x-btn-text"]//span[@data-l10nkey="btn_save" and contains(text(),'Save')]
+    #Click Element  ${MonitorTabSaveButton}
+
+    ${StatusEAClass} =  Get Status Column Value On The Selected Row On Monitor Tab Guest OS Table  ${ParameterValue}  12
+    #Should Be Equal  ${StatusEAClass}  state-icon failed-state-icon
+    ${Reqd_CellValue} =  Get Present Column Value On The Selected Row On Monitor Tab Guest OS Table  ${ParameterValue}  7
+    Log  ${Reqd_CellValue}
+
+eE-QuickTest
+    [Documentation]  Used for quickly testing some feature.
+    #[Tags]  zTC100iSingle, zTC110iSingle, zTC100iDual, zTC110iDual,  everRun
+    [Tags]  QT
+    LoginPage.Log in to EverRun  ${USER}  ${PWD}
+    VM-Page.Select VM Verify State Is Running  ${T3140_VMNAME}
+    Sleep  2s
+    Open Load Balance Tab
+    Sleep  10s
 

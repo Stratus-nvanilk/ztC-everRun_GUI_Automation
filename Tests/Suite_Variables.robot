@@ -53,3 +53,10 @@ ${T1092_Mode} =  0777
 ${T1092_OutputFile} =  /root/T1092-SS.output
 ${T1092_CmdLine} =  dos2unix /root/T1092.sh;/root/T1092.sh ${T1092_VMNAME}  >> ${T1092_OutputFile} 2>&1
 ${T1092_Destination} =  ${EXECDIR}\\Temp\\
+
+#eE-3140
+#${T3140_VMNAME} =  AS-CentOS76
+${T3140_VMNAME} =  MyWin7
+#${T3140_VMNAME} =  OS-CentOS76
+#${T3140_VMNAME} =  OS-CentOS76
+#${T3140_VMNAME} =  OS-CentOS76
