@@ -1,5 +1,6 @@
 *** Settings ***
 Library  SeleniumLibrary
+Library  String
 
 *** Variables ***
 
@@ -26,6 +27,7 @@ End Web Test
 Identify And Click Element
     [Arguments]  ${locator}
     Wait Until Element Is Enabled  ${locator}
+    Scroll Element Into View  ${locator}
     Set Focus To Element  ${locator}
     Click Element  ${locator}
 
@@ -42,3 +44,30 @@ Go Back To Previous Page
     Log  Go back to immediately previous page - equal to hitting back button on the browser.
     Go Back
     Sleep  5s
+
+Split Lines On String Return Stripped List
+    [Arguments]  ${GivenString}
+    Log  Accepts a string, splits it into a list of constituent lines, strips every line and returns the stripped list.
+    @{Split_lines} =  String.Split To Lines	 ${GivenString}
+    @{Stripped_lines} =  Evaluate  list(map(str.strip, @{Split_lines}))
+    [Return]  @{Stripped_lines}
+
+Purge Blank Elements From List
+    [Arguments]  @{GivenList}
+    @{Purged_lines} =  Evaluate  list(filter(None, @{GivenList}))
+    [Return]  @{Purged_lines}
+
+Get Me All Matching WebElements
+    [Arguments]  ${GivenCriterion}
+    Log  Accepts a criterion for element selection and returns all the webelements matching the given criterion.
+
+JS Click Element
+    [Documentation]
+    ...     Can be used to click hidden elements
+    ...     Dependencies
+    ...         SeleniumLibrary
+    ...         String
+    [Arguments]     ${element_xpath}
+    # escape " characters of xpath
+    ${element_xpath}=       Replace String      ${element_xpath}        \"  \\\"
+    Execute JavaScript  document.evaluate("${element_xpath}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(0).click();
